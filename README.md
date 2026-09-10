@@ -1,68 +1,33 @@
-# Gerador de Certificados UFPR (PVA)
+# 🌐 Gerador de Certificados UFPR (PVA) - Versão Web
 
-Este é um guia passo a passo completo para você conseguir instalar tudo e gerar os certificados facilmente, mesmo que nunca tenha usado programação ou linha de comando antes.
+Bem-vindo ao Gerador de Certificados PVA! A ferramenta foi totalmente reformulada para rodar **diretamente no seu navegador**, sem necessidade de instalar programas ou usar tela preta (terminal). Tudo é feito offline de forma segura no seu próprio computador.
 
----
-
-## Passo 1: Instalar o Python no computador
-O **Python** é o programa necessário para rodar o gerador. Você só precisa instalá-lo uma única vez.
-
-1. Acesse o site oficial: [python.org/downloads](https://www.python.org/downloads/)
-2. Clique no botão amarelo **Download Python**.
-3. Abra o arquivo baixado para iniciar o instalador.
-4. **⚠️ MUITO IMPORTANTE (No Windows):** Na primeira tela da instalação, marque a caixinha **"Add python.exe to PATH"** (ou "Adicionar Python ao PATH") na parte inferior da janela antes de clicar em "Install Now".
+> [!NOTE]
+> Você prefere a versão antiga em Python? Acesse a branch [`python-version`](https://github.com/brunomarafiga/Criacao_certificados/tree/python-version) deste repositório para baixar o script clássico.
 
 ---
 
-## Passo 2: Organizar os arquivos do gerador
-Coloque os três arquivos abaixo **juntos na mesma pasta** do seu computador (por exemplo, na pasta `Documentos` ou em uma pasta criada na `Área de Trabalho`):
+## 🚀 Como usar (Muito simples!)
 
-1. O arquivo do programa: `gerador.py`
-2. A imagem do cabeçalho: `ufpr_25.jpg`
-3. A sua planilha com os dados: Ela **precisa** se chamar exatamente `Relatório PVA.xlsx`. 
+1. **Acesse o site da ferramenta:**
+   👉 [brunomarafiga.github.io/Criacao_certificados](https://brunomarafiga.github.io/Criacao_certificados/)
 
-*(Se a sua planilha tiver outro nome, clique nela com o botão direito, escolha "Renomear" e altere para `Relatório PVA`).*
-
----
-
-## Passo 3: Abrir a tela de comandos (Terminal / Prompt de Comando)
-
-### No Windows:
-1. Abra a pasta onde você colocou os 3 arquivos.
-2. Clique na barra de endereço (onde mostra o caminho da pasta no topo da janela).
-3. Digite `cmd` e aperte a tecla **ENTER**. A janela de comando abrirá automaticamente apontando para a pasta correta.
-
-### No Linux ou Mac:
-1. Abra o aplicativo **Terminal**.
-2. Digite `cd ` (com um espaço depois do cd) e arraste a pasta onde estão os arquivos para dentro da janela do terminal.
-3. Aperte **ENTER**.
+2. **Prepare a sua planilha:**
+   Certifique-se de que a sua planilha com os dados esteja no formato **.xlsx**.
+   
+3. **Gere os certificados:**
+   - Na página que você abriu, simplesmente arraste a sua planilha para dentro do quadro pontilhado (ou clique para procurar o arquivo no seu computador).
+   - Aguarde a barra de progresso encher (o tempo varia de acordo com o tamanho da planilha).
+   
+4. **Baixe tudo pronto:**
+   - Assim que terminar, aparecerá um botão verde **"Baixar Certificados (.zip)"**.
+   - Clique nele para baixar todos os certificados formatados em `.odt`, prontinhos para uso!
 
 ---
 
-## Passo 4: Instalar os pacotes necessários (Só na primeira vez)
-Com a janela do Terminal / Prompt de Comando aberta:
-
-1. Copie o comando abaixo, cole na janela e aperte **ENTER**:
-
-```bash
-pip install pandas odfpy openpyxl
-```
-2. Aguarde alguns segundos até que a instalação seja totalmente concluída.
+### 🛑 E se alguém estiver com dados faltando?
+Se algum discente na sua planilha não tiver preenchido o "Local de atividades", a ferramenta não vai parar! Ela vai listar exatamente quem deu problema direto na tela, logo abaixo do botão de download, para que você corrija apenas esses casos depois.
 
 ---
 
-## Passo 5: Gerar os certificados
-
-1. Na mesma janela de comandos, copie e cole o comando abaixo e aperte **ENTER**:
-
-```bash
-python gerador.py
-```
-
-2. Pronto! O programa processará a planilha e criará automaticamente uma pasta chamada `certificados_gerados`. 
-3. Todos os certificados estarão salvos nessa pasta no formato de documento de texto (`.odt`), prontos para serem abertos no LibreOffice ou Microsoft Word.
-
----
-
-### 🛑 Resolução de problemas
-Caso algum estudante ou professor na planilha esteja com informações incompletas (por exemplo, se estiver faltando o preenchimento do "Local de atividades"), o programa não vai parar de funcionar. Ele apenas salvará as linhas com pendências em um arquivo separado chamado `linhas_sem_local.xlsx` para que você possa verificar e corrigir depois.
+*Desenvolvido para automatizar a geração de certificados ODT com base em relatórios exportados do sistema da UFPR.*
