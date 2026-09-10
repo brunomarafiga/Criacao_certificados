@@ -202,7 +202,7 @@ async function handleFile(file) {
         
         if (invalidos.length > 0) {
             errorsContainer.classList.remove('hidden');
-            errorsList.innerHTML = invalidos.map(nome => `<li>${escapeXml(nome)}</li>`).join('');
+            errorsList.innerHTML = invalidos.map(nome => `<tr><td>${escapeXml(nome)}</td></tr>`).join('');
         }
     };
     

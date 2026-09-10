@@ -242,19 +242,36 @@ header p {
     font-size: 0.9rem;
 }
 
-.errors-list ul {
-    list-style: none;
-    max-height: 150px;
+.table-container {
+    max-height: 200px;
     overflow-y: auto;
-    font-size: 0.85rem;
-    color: #7f1d1d;
+    border-radius: 8px;
+    border: 1px solid #fca5a5;
 }
 
-.errors-list li {
-    padding: 0.25rem 0;
+.errors-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    color: #7f1d1d;
+    text-align: left;
+}
+
+.errors-table th {
+    background-color: #fca5a5;
+    color: #7f1d1d;
+    padding: 0.5rem;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+.errors-table td {
+    padding: 0.5rem;
     border-bottom: 1px dashed #fca5a5;
 }
-.errors-list li:last-child {
+
+.errors-table tr:last-child td {
     border-bottom: none;
 }
 
