@@ -1,35 +1,68 @@
 # Gerador de Certificados UFPR (PVA)
 
-Este é um guia passo a passo simplificado para você conseguir gerar os certificados facilmente, sem precisar de conhecimentos avançados em informática.
+Este é um guia passo a passo completo para você conseguir instalar tudo e gerar os certificados facilmente, mesmo que nunca tenha usado programação ou linha de comando antes.
 
-## Passo 1: Organizar os arquivos
-Para que tudo funcione corretamente, os três arquivos abaixo precisam estar **juntos na mesma pasta** do seu computador:
+---
+
+## Passo 1: Instalar o Python no computador
+O **Python** é o programa necessário para rodar o gerador. Você só precisa instalá-lo uma única vez.
+
+1. Acesse o site oficial: [python.org/downloads](https://www.python.org/downloads/)
+2. Clique no botão amarelo **Download Python**.
+3. Abra o arquivo baixado para iniciar o instalador.
+4. **⚠️ MUITO IMPORTANTE (No Windows):** Na primeira tela da instalação, marque a caixinha **"Add python.exe to PATH"** (ou "Adicionar Python ao PATH") na parte inferior da janela antes de clicar em "Install Now".
+
+---
+
+## Passo 2: Organizar os arquivos do gerador
+Coloque os três arquivos abaixo **juntos na mesma pasta** do seu computador (por exemplo, na pasta `Documentos` ou em uma pasta criada na `Área de Trabalho`):
+
 1. O arquivo do programa: `gerador.py`
 2. A imagem do cabeçalho: `ufpr_25.jpg`
-3. A sua planilha de dados: Ela **precisa** se chamar exatamente `Relatório PVA.xlsx`. 
+3. A sua planilha com os dados: Ela **precisa** se chamar exatamente `Relatório PVA.xlsx`. 
 
-*(Atenção: Se a sua planilha tiver outro nome, clique nela com o botão direito, selecione "Renomear" e altere o nome para "Relatório PVA").*
+*(Se a sua planilha tiver outro nome, clique nela com o botão direito, escolha "Renomear" e altere para `Relatório PVA`).*
 
-## Passo 2: Preparar o ambiente
-Este passo só precisa ser feito uma única vez no seu computador para instalar os pacotes necessários.
-1. Abra o "Terminal" (ou "Prompt de Comando" se estiver no Windows).
-2. Copie o comando abaixo, cole na tela do terminal e aperte a tecla **ENTER**:
+---
+
+## Passo 3: Abrir a tela de comandos (Terminal / Prompt de Comando)
+
+### No Windows:
+1. Abra a pasta onde você colocou os 3 arquivos.
+2. Clique na barra de endereço (onde mostra o caminho da pasta no topo da janela).
+3. Digite `cmd` e aperte a tecla **ENTER**. A janela de comando abrirá automaticamente apontando para a pasta correta.
+
+### No Linux ou Mac:
+1. Abra o aplicativo **Terminal**.
+2. Digite `cd ` (com um espaço depois do cd) e arraste a pasta onde estão os arquivos para dentro da janela do terminal.
+3. Aperte **ENTER**.
+
+---
+
+## Passo 4: Instalar os pacotes necessários (Só na primeira vez)
+Com a janela do Terminal / Prompt de Comando aberta:
+
+1. Copie o comando abaixo, cole na janela e aperte **ENTER**:
 
 ```bash
 pip install pandas odfpy openpyxl
 ```
-Aguarde alguns segundos até que a instalação seja totalmente concluída.
+2. Aguarde alguns segundos até que a instalação seja totalmente concluída.
 
-## Passo 3: Gerar os certificados
-Sempre que você quiser gerar novos certificados, siga os passos abaixo:
-1. No terminal, navegue até a pasta onde você guardou os três arquivos do Passo 1.
-2. Copie e cole o comando abaixo no terminal e aperte **ENTER**:
+---
+
+## Passo 5: Gerar os certificados
+
+1. Na mesma janela de comandos, copie e cole o comando abaixo e aperte **ENTER**:
 
 ```bash
 python gerador.py
 ```
 
-Pronto! O programa irá processar a sua planilha e criará automaticamente uma nova pasta chamada `certificados_gerados`. Todos os seus certificados estarão armazenados lá, no formato de documento de texto (.odt), prontos para serem abertos no LibreOffice ou Microsoft Word.
+2. Pronto! O programa processará a planilha e criará automaticamente uma pasta chamada `certificados_gerados`. 
+3. Todos os certificados estarão salvos nessa pasta no formato de documento de texto (`.odt`), prontos para serem abertos no LibreOffice ou Microsoft Word.
 
-### Resolução de problemas
-Caso algum estudante ou professor na planilha esteja com informações incompletas (por exemplo, se estiver faltando o preenchimento do "Local de atividades"), o programa não vai parar de funcionar. Ele apenas ignorará o erro e salvará os dados com problema em um arquivo separado chamado `linhas_sem_local.xlsx`. Você poderá abrir esse arquivo depois para verificar o que precisa ser corrigido.
+---
+
+### 🛑 Resolução de problemas
+Caso algum estudante ou professor na planilha esteja com informações incompletas (por exemplo, se estiver faltando o preenchimento do "Local de atividades"), o programa não vai parar de funcionar. Ele apenas salvará as linhas com pendências em um arquivo separado chamado `linhas_sem_local.xlsx` para que você possa verificar e corrigir depois.
