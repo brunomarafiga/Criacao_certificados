@@ -147,7 +147,7 @@ def draw_certificate(doc, tipo, dados, bg_image_path):
     doc.text.addElement(p_sig3)
 
 def main():
-    base_dir = r"c:\Users\bruno\OneDrive - ufpr.br\estágio\Coappe\Criação de certificados"
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     excel_input = os.path.join(base_dir, "Relatório PVA.xlsx")
     bg_image = os.path.join(base_dir, "ufpr_25.jpg")
     output_dir = os.path.join(base_dir, "certificados_gerados")
