@@ -3,11 +3,11 @@ import re
 import unicodedata
 import pandas as pd
 import html
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import Paragraph
-from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
+
+from odf.opendocument import OpenDocumentText
+from odf.style import Style, TextProperties, ParagraphProperties, MasterPage, PageLayout, PageLayoutProperties
+from odf.text import P, Span
+from odf.draw import Frame, Image
 
 def normalize_filename(text):
     text = str(text)
@@ -20,95 +20,147 @@ def normalize_filename(text):
 
 def normalize_local(text):
     text = str(text).strip()
-    
-    # Remove aspas (duplas ou simples) de qualquer lugar do texto
     text = text.replace('"', '').replace("'", "")
-    
-    # Remove caracteres estranhos do início e do final da string (como '<', '>', '-', '.')
-    # Mantém apenas letras e números no início e no fim.
     text = re.sub(r'^[^a-zA-Z0-9À-ÿ]+', '', text)
     text = re.sub(r'[^a-zA-Z0-9À-ÿ]+$', '', text)
-    
-    # Substitui múltiplos espaços por um só
     text = " ".join(text.split())
-    
     if text:
-        # Coloca a primeira letra em maiúsculo (preservando o resto)
         text = text[0].upper() + text[1:]
     return text
 
-def draw_certificate(c, tipo, dados, bg_image_path):
-    width, height = A4
-    margin = 60
+def draw_certificate(doc, tipo, dados, bg_image_path):
+    # Setup page layout (A4)
+    pl = PageLayout(name="A4")
+    pl.addElement(PageLayoutProperties(pagewidth="21cm", pageheight="29.7cm", margin="2cm"))
+    doc.automaticstyles.addElement(pl)
+    mp = MasterPage(name="Standard", pagelayoutname=pl)
+    doc.masterstyles.addElement(mp)
     
+    # Styles
+    center_para = Style(name="Center", family="paragraph")
+    center_para.addElement(ParagraphProperties(textalign="center"))
+    doc.styles.addElement(center_para)
+    
+    right_para = Style(name="Right", family="paragraph")
+    right_para.addElement(ParagraphProperties(textalign="end"))
+    doc.styles.addElement(right_para)
+
+    justify_para = Style(name="Justify", family="paragraph")
+    justify_para.addElement(ParagraphProperties(textalign="justify", lineheight="150%"))
+    doc.styles.addElement(justify_para)
+    
+    bold_text = Style(name="Bold", family="text")
+    bold_text.addElement(TextProperties(fontweight="bold"))
+    doc.styles.addElement(bold_text)
+    
+    title_text = Style(name="TitleText", family="text")
+    title_text.addElement(TextProperties(fontsize="16pt", fontweight="bold"))
+    doc.styles.addElement(title_text)
+
+    header_text_style = Style(name="HeaderText", family="text")
+    header_text_style.addElement(TextProperties(fontsize="9pt"))
+    doc.styles.addElement(header_text_style)
+
+    body_text_style = Style(name="BodyText", family="text")
+    body_text_style.addElement(TextProperties(fontsize="12pt"))
+    doc.styles.addElement(body_text_style)
+
     # 1. Logo at the top
-    logo_width = 250
-    logo_height = 120 
-    logo_x = (width - logo_width) / 2
-    logo_y = height - 160
     if os.path.exists(bg_image_path):
-        c.drawImage(bg_image_path, logo_x, logo_y, width=logo_width, height=logo_height, preserveAspectRatio=True, anchor='s')
+        photo = doc.addPicture(bg_image_path)
+        p_img = P(stylename=center_para)
+        df = Frame(width="8.8cm", height="4.2cm") 
+        df.addElement(Image(href=photo))
+        p_img.addElement(df)
+        doc.text.addElement(p_img)
 
     # 2. Header
-    c.setFont("Helvetica", 9)
     header_text = [
         "UNIVERSIDADE FEDERAL DO PARANÁ",
         "Rua XV de Novembro, 1299,  - Bairro Centro, Curitiba/PR, CEP 80060-000",
         "Telefone: (41) 3360-5000  - ufpr.br"
     ]
-    current_y = logo_y - 15
     for line in header_text:
-        c.drawCentredString(width/2, current_y, line)
-        current_y -= 12
+        p = P(stylename=center_para)
+        p.addElement(Span(stylename=header_text_style, text=line))
+        doc.text.addElement(p)
     
+    # Spacing
+    doc.text.addElement(P())
+    doc.text.addElement(P())
+
     # 3. Title "CERTIFICADO"
-    c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(width/2, logo_y - 70, "CERTIFICADO")
+    p_title = P(stylename=center_para)
+    p_title.addElement(Span(stylename=title_text, text="CERTIFICADO"))
+    doc.text.addElement(p_title)
     
+    # Spacing
+    doc.text.addElement(P())
+    doc.text.addElement(P())
+
     # 4. Body Text
     if tipo == 'aluno':
         html_text = f"Certificamos que a estudante <b>{dados['nome_estudante']}</b>, registrada sob o nº de matrícula <b>{dados['matricula_estudante']}</b>, desenvolveu <b>{str(dados['horas_semanais']).zfill(2)}</b> horas semanais de atividades no <b>{dados['programa']}</b>, no período de <b>{dados['data_inicio']}</b> a <b>{dados['data_fim']}</b>, totalizando <b>{dados['horas_totais']}</b> horas, no <b>{dados['projeto']}</b>, sob a orientação da Professora <b>{dados['nome_orientador']}</b>, registrada sob o nº de matrícula <b>{dados['matricula_orientador']}</b>."
     else:
         html_text = f"Certificamos que a Professora <b>{dados['nome_orientador']}</b>, registrada sob o nº de matrícula <b>{dados['matricula_orientador']}</b> orientou, no <b>{dados['programa']}</b>, a estudante <b>{dados['nome_estudante']}</b>, registrada sob o nº de matrícula <b>{dados['matricula_estudante']}</b>, no período de <b>{dados['data_inicio']}</b> a <b>{dados['data_fim']}</b>, no <b>{dados['projeto']}</b>, com carga horária semanal de <b>{str(dados['horas_semanais']).zfill(2)}</b> horas, totalizando <b>{dados['horas_totais']}</b> horas."
         
-    style_body = ParagraphStyle(name='Body', fontName='Helvetica', fontSize=12, leading=18, alignment=TA_JUSTIFY)
-    p = Paragraph(html_text, style_body)
+    p_body = P(stylename=justify_para)
+    parts = re.split(r'(<b>|</b>)', html_text)
+    is_bold = False
+    for part in parts:
+        if part == '<b>':
+            is_bold = True
+        elif part == '</b>':
+            is_bold = False
+        elif part:
+            if is_bold:
+                p_body.addElement(Span(stylename=bold_text, text=part))
+            else:
+                p_body.addElement(Span(stylename=body_text_style, text=part))
+                
+    doc.text.addElement(p_body)
     
-    p_w, p_h = p.wrap(width - 2*margin, height)
-    # Adjust Y space since Processo is removed
-    body_y = logo_y - 120 - p_h
-    p.drawOn(c, margin, body_y)
+    # Spacing
+    for _ in range(4):
+        doc.text.addElement(P())
     
     # 5. Date
-    c.setFont("Helvetica", 12)
-    c.drawRightString(width - margin, body_y - 50, "Curitiba, 25 de junho de 2026.")
+    p_date = P(stylename=right_para)
+    p_date.addElement(Span(stylename=body_text_style, text="Curitiba, 25 de junho de 2026."))
+    doc.text.addElement(p_date)
     
+    # Spacing
+    for _ in range(4):
+        doc.text.addElement(P())
+
     # 6. Signature Block
-    sig_y = body_y - 130
-    c.setFont("Helvetica-Bold", 12)
-    c.drawCentredString(width/2, sig_y, "MARIA STAEL BITTENCOURT MADUREIRA")
-    c.setFont("Helvetica", 11)
-    c.drawCentredString(width/2, sig_y - 15, "COORDENADORA DE APOIO A PROJETOS, PROGRAMAS E ESTÁGIOS - COAPPE")
-    c.drawCentredString(width/2, sig_y - 30, "PRÓ - REITORIA DE GRADUAÇÃO E ENSINO PROFISSIONAL – PROGRAP")
+    p_sig1 = P(stylename=center_para)
+    p_sig1.addElement(Span(stylename=bold_text, text="MARIA STAEL BITTENCOURT MADUREIRA"))
+    doc.text.addElement(p_sig1)
+    
+    p_sig2 = P(stylename=center_para)
+    p_sig2.addElement(Span(stylename=body_text_style, text="COORDENADORA DE APOIO A PROJETOS, PROGRAMAS E ESTÁGIOS - COAPPE"))
+    doc.text.addElement(p_sig2)
+    
+    p_sig3 = P(stylename=center_para)
+    p_sig3.addElement(Span(stylename=body_text_style, text="PRÓ - REITORIA DE GRADUAÇÃO E ENSINO PROFISSIONAL – PROGRAP"))
+    doc.text.addElement(p_sig3)
 
 def main():
     base_dir = r"c:\Users\bruno\OneDrive - ufpr.br\estágio\Coappe\Criação de certificados"
-    csv_input = os.path.join(base_dir, "Relatório PVA.csv")
+    excel_input = os.path.join(base_dir, "Relatório PVA.xlsx")
     bg_image = os.path.join(base_dir, "ufpr_25.jpg")
     output_dir = os.path.join(base_dir, "certificados_gerados")
-    csv_skipped = os.path.join(base_dir, "linhas_sem_local.csv")
+    excel_skipped = os.path.join(base_dir, "linhas_sem_local.xlsx")
     
-    if not os.path.exists(csv_input):
-        print(f"Erro: CSV não encontrado em {csv_input}")
+    if not os.path.exists(excel_input):
+        print(f"Erro: Arquivo Excel não encontrado em {excel_input}")
         return
         
     os.makedirs(output_dir, exist_ok=True)
     
-    print("Lendo dados do CSV...")
-    try:
-        df = pd.read_csv(csv_input, sep=';', encoding='utf-8')
-    except UnicodeDecodeError:
-        df = pd.read_csv(csv_input, sep=';', encoding='latin1')
+    print("Lendo dados da planilha Excel...")
+    df = pd.read_excel(excel_input)
     
     linhas_invalidas = []
     
@@ -118,14 +170,12 @@ def main():
     for index, row in df.iterrows():
         local = str(row.get('Local de atividades', '')).strip()
         
-        # Filtro: Se local for vazio ou '-', separar e não gerar
         if not local or local == '-':
             linhas_invalidas.append(row)
             continue
             
         local_norm = normalize_local(local)
         
-        # Dados para preencher no texto com escape de HTML (evita erros com '<' e '>')
         dados = {
             'nome_estudante': html.escape(str(row.get('Discente', '')).strip()),
             'matricula_estudante': html.escape(str(row.get('GRR', '')).strip()),
@@ -139,38 +189,30 @@ def main():
             'projeto': html.escape(local_norm)
         }
         
-        # Gerar certificado ALUNO
         if dados['nome_estudante'] and dados['nome_estudante'] != '-':
-            filename_aluno = f"certificado_aluno_{normalize_filename(dados['nome_estudante'])}.pdf"
+            filename_aluno = f"certificado_aluno_{normalize_filename(dados['nome_estudante'])}.odt"
             filepath_aluno = os.path.join(output_dir, filename_aluno)
-            c_aluno = canvas.Canvas(filepath_aluno, pagesize=A4)
-            draw_certificate(c_aluno, 'aluno', dados, bg_image)
-            c_aluno.showPage()
-            c_aluno.save()
+            doc_aluno = OpenDocumentText()
+            draw_certificate(doc_aluno, 'aluno', dados, bg_image)
+            doc_aluno.save(filepath_aluno)
             gerados += 1
             
-        # Gerar certificado PROFESSOR
         if dados['nome_orientador'] and dados['nome_orientador'] != '-' and dados['matricula_orientador'] != '0':
-            # Para evitar sobrepor PDFs do mesmo professor (já que ele pode orientar vários alunos),
-            # incluimos o nome do aluno no nome do arquivo do professor
-            filename_prof = f"certificado_professor_{normalize_filename(dados['nome_orientador'])}_orientando_{normalize_filename(dados['nome_estudante'])}.pdf"
+            filename_prof = f"certificado_professor_{normalize_filename(dados['nome_orientador'])}_orientando_{normalize_filename(dados['nome_estudante'])}.odt"
             filepath_prof = os.path.join(output_dir, filename_prof)
-            c_prof = canvas.Canvas(filepath_prof, pagesize=A4)
-            draw_certificate(c_prof, 'professor', dados, bg_image)
-            c_prof.showPage()
-            c_prof.save()
+            doc_prof = OpenDocumentText()
+            draw_certificate(doc_prof, 'professor', dados, bg_image)
+            doc_prof.save(filepath_prof)
             gerados += 1
             
-        # Print progress for large files
         if index % 500 == 0:
             print(f"Processando linha {index}/{total}...")
             
-    # Salvar as linhas que não tinham local
     if linhas_invalidas:
         df_invalidas = pd.DataFrame(linhas_invalidas)
-        df_invalidas.to_csv(csv_skipped, sep=';', index=False, encoding='utf-8-sig')
+        df_invalidas.to_excel(excel_skipped, index=False)
         print(f"\nATENÇÃO: {len(linhas_invalidas)} linhas foram ignoradas por não terem 'Local de atividades'.")
-        print(f"Elas foram salvas no arquivo: {csv_skipped}")
+        print(f"Elas foram salvas no arquivo: {excel_skipped}")
         
     print(f"\nConcluído com sucesso! {gerados} certificados foram gerados em 'certificados_gerados'.")
 
