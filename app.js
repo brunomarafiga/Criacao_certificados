@@ -172,7 +172,7 @@ async function handleFile(file) {
             // Aluno
             if (dados.nome_estudante && dados.nome_estudante !== '-') {
                 let hrs_sem = String(dados.horas_semanais).padStart(2, '0');
-                let html_text = `Certificamos que a estudante <b>${dados.nome_estudante}</b>, registrada sob o nº de matrícula <b>${dados.matricula_estudante}</b>, desenvolveu <b>${hrs_sem}</b> horas semanais de atividades no <b>${dados.programa}</b>, no período de <b>${dados.data_inicio}</b> a <b>${dados.data_fim}</b>, totalizando <b>${dados.horas_totais}</b> horas, no <b>${dados.projeto}</b>, sob a orientação da Professora <b>${dados.nome_orientador}</b>, registrada sob o nº de matrícula <b>${dados.matricula_orientador}</b>.`;
+                let html_text = `Certificamos que o(a) estudante <b>${dados.nome_estudante}</b>, com matrícula nº <b>${dados.matricula_estudante}</b>, desenvolveu <b>${hrs_sem}</b> horas semanais de atividades no <b>${dados.programa}</b>, no período de <b>${dados.data_inicio}</b> a <b>${dados.data_fim}</b>, totalizando <b>${dados.horas_totais}</b> horas, no <b>${dados.projeto}</b>, sob a orientação do(a) Professor(a) <b>${dados.nome_orientador}</b>, com matrícula nº <b>${dados.matricula_orientador}</b>.`;
                 
                 let blob = await createOdtBlob(html_text);
                 mainZip.file(`certificado_aluno_${normalizeFilename(dados.nome_estudante)}.odt`, blob);
@@ -182,7 +182,7 @@ async function handleFile(file) {
             // Orientador
             if (dados.nome_orientador && dados.nome_orientador !== '-' && dados.matricula_orientador !== '0') {
                 let hrs_sem = String(dados.horas_semanais).padStart(2, '0');
-                let html_text = `Certificamos que a Professora <b>${dados.nome_orientador}</b>, registrada sob o nº de matrícula <b>${dados.matricula_orientador}</b> orientou, no <b>${dados.programa}</b>, a estudante <b>${dados.nome_estudante}</b>, registrada sob o nº de matrícula <b>${dados.matricula_estudante}</b>, no período de <b>${dados.data_inicio}</b> a <b>${dados.data_fim}</b>, no <b>${dados.projeto}</b>, com carga horária semanal de <b>${hrs_sem}</b> horas, totalizando <b>${dados.horas_totais}</b> horas.`;
+                let html_text = `Certificamos que o(a) Professor(a) <b>${dados.nome_orientador}</b>, com matrícula nº <b>${dados.matricula_orientador}</b>, orientou, no <b>${dados.programa}</b>, o(a) estudante <b>${dados.nome_estudante}</b>, com matrícula nº <b>${dados.matricula_estudante}</b>, no período de <b>${dados.data_inicio}</b> a <b>${dados.data_fim}</b>, no <b>${dados.projeto}</b>, com carga horária semanal de <b>${hrs_sem}</b> horas, totalizando <b>${dados.horas_totais}</b> horas.`;
                 
                 let blob = await createOdtBlob(html_text);
                 mainZip.file(`certificado_professor_${normalizeFilename(dados.nome_orientador)}_orientando_${normalizeFilename(dados.nome_estudante)}.odt`, blob);
