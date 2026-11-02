@@ -31,3 +31,12 @@ Se algum discente na sua planilha não tiver preenchido o "Local de atividades",
 ---
 
 *Desenvolvido para automatizar a geração de certificados ODT com base em relatórios exportados do sistema da UFPR.*
+
+## Contexto do projeto
+
+- **Categoria:** Aplicação web
+- **Temas e tecnologias:** HTML, JavaScript, geração de certificados ODT e processamento local de planilhas
+- **Visibilidade:** Público
+- **Repositório:** <https://github.com/brunomarafiga/Criacao_certificados>
+
+Este README apresenta o objetivo, a organização e as instruções de uso do projeto. Consulte os arquivos e diretórios do repositório para detalhes de implementação e materiais complementares.
